@@ -70,6 +70,14 @@ ggplot(intervalSteps, aes(interval, avgStepsInterval)) +
   ggtitle("Average Steps Taken at Interval")
 ```
 
+- The 5-minute Interval Containing the Maximum Number of Steps is :
+
+```{r}
+maxsteps <- summarise(intervalSteps, maxsteps=max(avgStepsInterval))
+filter(intervalSteps, avgStepsInterval == maxsteps$maxsteps)
+```
+
+
 - Out of curiosity, the following time series plot shows the total steps taken on each day. 
 
 ```{r, fig.align="center"}
@@ -128,8 +136,8 @@ activity$weekday <- as.factor(ifelse(weekdays(activity$date) %in% c("Saturday", 
 patternToPlot <- activity %>% group_by(interval, weekday) %>%
   summarise(avgSteps = mean(steps, na.rm=TRUE))
 ggplot(patternToPlot, aes(x=interval, y=avgSteps, fill=weekday)) +
-  geom_line() +
-  facet_grid(weekday ~ .,scales = "free") + 
+  geom_line(aes(color=weekday)) +
+  facet_wrap(~weekday,nrow=2) +
   ylab("Number of steps") +
   ggtitle("Average number of steps over Interval")
 

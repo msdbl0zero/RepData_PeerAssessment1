@@ -74,6 +74,23 @@ ggplot(intervalSteps, aes(interval, avgStepsInterval)) +
 
 <img src="PA1_template_files/figure-html/unnamed-chunk-5-1.png" title="" alt="" style="display: block; margin: auto;" />
 
+- The 5-minute Interval Containing the Maximum Number of Steps is :
+
+
+```r
+maxsteps <- summarise(intervalSteps, maxsteps=max(avgStepsInterval))
+filter(intervalSteps, avgStepsInterval == maxsteps$maxsteps)
+```
+
+```
+## Source: local data frame [1 x 2]
+## 
+##   interval avgStepsInterval
+##      (int)            (dbl)
+## 1      835         206.1698
+```
+
+
 - Out of curiosity, the following time series plot shows the total steps taken on each day. 
 
 
@@ -85,7 +102,7 @@ ggplot(dailySteps, aes(date, ttlDailySteps)) +
   ggtitle("Daily Total Steps Taken")
 ```
 
-<img src="PA1_template_files/figure-html/unnamed-chunk-6-1.png" title="" alt="" style="display: block; margin: auto;" />
+<img src="PA1_template_files/figure-html/unnamed-chunk-7-1.png" title="" alt="" style="display: block; margin: auto;" />
 
 ###<span style="color:#808080"> Imputing missing values</span>
 
@@ -126,7 +143,7 @@ ggplot(dailySteps, aes(ttlDailySteps)) +
   ggtitle("Histogram of Daily Total Steps Taken")
 ```
 
-<img src="PA1_template_files/figure-html/unnamed-chunk-9-1.png" title="" alt="" style="display: block; margin: auto;" />
+<img src="PA1_template_files/figure-html/unnamed-chunk-10-1.png" title="" alt="" style="display: block; margin: auto;" />
 
 ###<span style="color:#808080"> Are there differences in activity patterns between weekdays and weekends?</span>
 
@@ -140,13 +157,13 @@ activity$weekday <- as.factor(ifelse(weekdays(activity$date) %in% c("Saturday", 
 patternToPlot <- activity %>% group_by(interval, weekday) %>%
   summarise(avgSteps = mean(steps, na.rm=TRUE))
 ggplot(patternToPlot, aes(x=interval, y=avgSteps, fill=weekday)) +
-  geom_line() +
-  facet_grid(weekday ~ .,scales = "free") + 
+  geom_line(aes(color=weekday)) +
+  facet_wrap(~weekday,nrow=2) +
   ylab("Number of steps") +
   ggtitle("Average number of steps over Interval")
 ```
 
-<img src="PA1_template_files/figure-html/unnamed-chunk-10-1.png" title="" alt="" style="display: block; margin: auto;" />
+<img src="PA1_template_files/figure-html/unnamed-chunk-11-1.png" title="" alt="" style="display: block; margin: auto;" />
 
 
 ###<span style="color:red">Now you should get up, drink some water and walk around &#x1f603; Thank you!! </span>
