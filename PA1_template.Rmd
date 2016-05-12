@@ -63,11 +63,21 @@ ggplot(dailySteps, aes(ttlDailySteps)) +
 intervalSteps = activity %>% group_by(interval) %>%
   summarise(avgStepsInterval = mean(steps, na.rm=TRUE))
 
-ggplot(intervalSteps, aes(interval, avgStepsInterval)) + 
-  geom_line() +
-  xlab("interval(00:00 - 23:55)") + ylab("average number of steps") +
-  theme(axis.text.x = element_text(face="bold", size=10, angle=30)) + 
-  ggtitle("Average Steps Taken at Interval")
+toTime <- function(x) {
+    m <- x %% 100
+    h <- x %/% 100
+    sprintf("%.2d:%.2d", h, m)
+}
+
+intervalSteps$time <- as.POSIXct(strptime(lapply(intervalSteps$interval, toTime), "%H:%M"))
+
+plot(x=intervalSteps$time, y=intervalSteps$avgStepsInterval, type="l", xaxt="n",
+     xlab = "Time in 5-minute Intervals", 
+     ylab="Mean Steps Across All Days", 
+     main="Full time-series plot of avg steps by 5-minute interval, across all days")
+at <- c(pretty(intervalSteps$time, n=6), max(intervalSteps$time))
+axis(1, at=at, labels=format(at, "%H:%M"))
+
 ```
 
 - The 5-minute Interval Containing the Maximum Number of Steps is :
@@ -136,9 +146,9 @@ activity$weekday <- as.factor(ifelse(weekdays(activity$date) %in% c("Saturday", 
 patternToPlot <- activity %>% group_by(interval, weekday) %>%
   summarise(avgSteps = mean(steps, na.rm=TRUE))
 ggplot(patternToPlot, aes(x=interval, y=avgSteps, fill=weekday)) +
-  geom_line() aes(color=weekday)+
-  fafacet_wrap(~weekday,nrow=2) +
-  ab("Number of steps") +
+  geom_line(aes(color=weekday)) +
+  facet_wrap(~weekday,nrow=2) +
+  ylab("Number of steps") +
   ggtitle("Average number of steps over Interval")
 
 ```
